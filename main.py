@@ -1,7 +1,6 @@
+from credentials import secret_key
 from typing import List
 from time import sleep
-from credentials import secret_key
-import base64
 import requests
 import json
 
