@@ -5,21 +5,17 @@ import requests
 import json
 
 
-def Download_Report(download_url: str) -> bool:
+def downlad_report(download_url: str) -> str:
 
     response = requests.get(download_url)
 
     if response.status_code != 200:
-        print(response.status_code)
-        return False
-
-    with open('output.csv', 'wb') as f:
-        f.write(response.content)
+        raise Exception(f"Invalid Status code downloading report: {response.status_code}")
     
-    return True
+    return response.content
 
 
-def Poll_Report_URL(url: str) -> bool:
+def poll_report_url(url: str) -> str:
 
     headers = {
         "Authorization": f"Basic {secret_key}",
@@ -30,17 +26,16 @@ def Poll_Report_URL(url: str) -> bool:
     response = requests.get(url=url, headers=headers)
 
     if response.status_code != 200:
-        print(f"Error in polling: {response.status_code}")
-        return False
+        raise Exception(f"Error in polling: {response.status_code}")
 
     while response.json()['status'] != 'COMPLETED':
         sleep(60)
         response = requests.get(url=url, headers=headers)
 
-    return Download_Report(response.json()['url'])
+    return response.json()['url']
 
-def Get_Report(report_code: str, columns: List[str], filters: List[dict]=[], sort_by: List[dict]=[]) -> bool:
-    url = "https://training.app.nulogy.net/api/reports/report_runs"
+def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sort_by: List[dict]=[]) -> bool:
+    url = "https://app.nulogy.net/api/reports/report_runs"
 
     headers = {
         "Authorization": f"Basic {secret_key}",
@@ -60,12 +55,32 @@ def Get_Report(report_code: str, columns: List[str], filters: List[dict]=[], sor
     if response.status_code != 201:
         print(f"Error: {response.status_code}")
         return 'Error'
-    
+
     status_url = response.json()['status_url']
-    result_url = Poll_Report_URL(status_url)
+    result_url = poll_report_url(status_url)
+    report = downlad_report(result_url)
 
-    return ''
+    return report
 
 
-Get_Report("receive_order", ["receive_order_code", "item_code", "item_description", "item_material_cost_per_unit"])
+
+get_report("pallet_aging",
+    ["location",
+     "pallet_number",
+     "item_code",
+     "time_in_storage_minutes"
+    ]
+    ,[
+        {
+            "column": "location",
+            "operator": "starts with",
+            "threshold": "Line"
+        },
+        {
+            "column": "item_type_name",
+            "operator": "starts with",
+            "threshold": "F"
+        }
+    ]
+)
 
