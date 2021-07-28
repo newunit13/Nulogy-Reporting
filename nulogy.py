@@ -62,25 +62,14 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
 
     return report
 
+if __name__ == '__main__':
 
+    report_code = "pallet_aging"
+    columns = ["location", "pallet_number", "item_code", "time_in_storage_minutes"]
+    filters = [{"column": "location", "operator": "starts with", "threshold": "Line"}, 
+               {"column": "item_type_name", "operator": "starts with", "threshold": "F"}]
 
-get_report("pallet_aging",
-    ["location",
-     "pallet_number",
-     "item_code",
-     "time_in_storage_minutes"
-    ]
-    ,[
-        {
-            "column": "location",
-            "operator": "starts with",
-            "threshold": "Line"
-        },
-        {
-            "column": "item_type_name",
-            "operator": "starts with",
-            "threshold": "F"
-        }
-    ]
-)
+    report = get_report(report_code=report_code, columns=columns, filters=filters)
 
+    with open('output.csv', 'wb') as f:
+        f.write(report)
