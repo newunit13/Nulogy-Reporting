@@ -1,4 +1,4 @@
-from credentials import secret_key
+from utils.credentials import nulogy
 from typing import List
 from time import sleep
 import requests
@@ -18,7 +18,7 @@ def downlad_report(download_url: str) -> str:
 def poll_report_url(url: str) -> str:
 
     headers = {
-        "Authorization": f"Basic {secret_key}",
+        "Authorization": f"Basic {nulogy['secret_key']}",
         "Content-Type": "application/json; charset=utf-8",
         "Accept": "application/json"
     }
@@ -38,7 +38,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
     url = "https://app.nulogy.net/api/reports/report_runs"
 
     headers = {
-        "Authorization": f"Basic {secret_key}",
+        "Authorization": f"Basic {nulogy['secret_key']}",
         "Content-Type": "application/json; charset=utf-8",
         "Accept": "application/json"
     }
@@ -55,6 +55,9 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
     if response.status_code != 201:
         print(f"Error: {response.status_code}")
         return 'Error'
+
+    # small sleep to give the report a chance to generate before polling for a download link
+    sleep(30)
 
     status_url = response.json()['status_url']
     result_url = poll_report_url(status_url)
