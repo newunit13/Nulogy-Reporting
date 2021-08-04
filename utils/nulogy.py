@@ -29,6 +29,7 @@ def poll_report_url(url: str) -> str:
         raise Exception(f"Error in polling: {response.status_code}")
 
     while response.json()['status'] != 'COMPLETED':
+        print('Report not yet ready, sleeping 60 seconds before next poll')
         sleep(60)
         response = requests.get(url=url, headers=headers)
 
