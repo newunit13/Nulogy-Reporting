@@ -37,7 +37,7 @@ for item, cost, dax_id in r:
     if item in nulogy_items:
         nulogy_items[item]["dax_cost"] = f"{round(cost, 5):.5f}"
 
-with open('output.csv', 'w', newline='') as csvfile:
+with open('item_cost.csv', 'w', newline='') as csvfile:
 
     fieldnames = ['Code', 'Old Cost Per Unit', 'Cost Per Unit', 'UUID']
     csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
