@@ -28,7 +28,7 @@ for row in report:
     row = row.split(',')
     nulogy_items[row[1]]["location"] = row[0]
 
-with open('pallet_details.csv', 'w', newline='') as csvfile:
+with open('output/pallet_counts.csv', 'w', newline='') as csvfile:
 
     fieldnames = ["pallet_number", "item_number", "item_type", "customer_name", "location"]
 
