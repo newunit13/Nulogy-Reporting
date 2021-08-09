@@ -38,7 +38,7 @@ for item, qty, uom in r:
         nulogy_items[item]["dax_qty"] = f"{round(qty, 2):,.2f}"
         nulogy_items[item]["dax_uom"] = uom
 
-with open('inventory_snapshot.csv', 'w', newline='') as csvfile:
+with open('output/inventory_snapshot.csv', 'w', newline='') as csvfile:
 
     fieldnames = ['Item ID', 'Item Type', 'Nulogy Qty', 'Nulogy UOM', 'DAX Qty', 'DAX UOM']
     csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
