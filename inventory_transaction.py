@@ -10,7 +10,7 @@ filters = [{"column": "created_at", "operator": "yesterday"}]
 report = nu.get_report(report_code=report_code, columns=columns, filters=filters).decode("utf-8")
 report = [line.replace('"', '') for line in report.split('\n')[1:] if len(line) > 1]
 
-with open('transaction_history.csv', 'w', newline='') as csvfile:
+with open('output/transaction_history.csv', 'w', newline='') as csvfile:
 
     fieldnames = ["id", "inventory_transaction_type", "inventory_transation_id", "item_code", "item_description", 
                   "location_name", "pallet", "transaction_quantity_value", 
