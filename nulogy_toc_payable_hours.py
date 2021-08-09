@@ -30,7 +30,7 @@ for row in report:
     else:
         ds[row[0]]["toc_payble_hours"] = 0
 
-with open('toc_payable_hours.csv', 'w', newline='') as csvfile:
+with open('output/toc_payable_hours.csv', 'w', newline='') as csvfile:
 
     fieldnames = ['Job ID', 'Line Number', 'TOC Hours', 'Downtime Minutes', 'TOC Payable Hours']
     csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
