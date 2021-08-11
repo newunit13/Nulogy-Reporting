@@ -6,7 +6,7 @@ report_code = "inventory_snapshot"
 columns = ["item_type", "base_quantity", "base_unit_of_measure", "item_description"]
 filters = [{"column": "customer_name", "operator": "=", "threshold": "Accu-tec"}]
 
-report = nu.get_report(report_code=report_code, columns=columns, filters=filters)
+report = nu.get_report(report_code=report_code, columns=columns, filters=filters, headers=False)
 
 
 nulogy_items = dict()
@@ -23,7 +23,7 @@ FROM INVENTTABLE ivt
 LEFT JOIN INVENTTABLEMODULE ivti ON ivti.ITEMID = ivt.ITEMID and ivti.DATAAREAID = ivt.DATAAREAID and ivti.MODULETYPE = 0
 LEFT JOIN INVENTSUM ivs ON ivs.ITEMID = ivt.ITEMID and ivs.DATAAREAID = ivt.DATAAREAID
 WHERE ivt.DATAAREAID = 'act'
-  --and ivt.ITEMGROUPID = 'AI'
+  and ivt.ITEMGROUPID = 'AI'
   and ivs.PHYSICALINVENT <> 0
 GROUP BY ivt.NAMEALIAS, ivti.UNITID
 """
