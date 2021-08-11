@@ -1,5 +1,12 @@
 import utils.nulogy as nu
 import csv
+from datetime import datetime
+from utils.credentials import o365
+from utils.email import Email
+
+OUTPUT_FILE = f"output/{datetime.now().strftime('%Y%m%d-%H%M')}-ShipmentItems.csv"
+SEND_TO = 'npittman@accu-tec.com'
+
 
 report_code = "shipment_item"
 columns = ["pallet_number", "ship_order_code", "ship_order_reference_number", "ship_order_customer_name", "carrier_code", "trailer_number", "item_code", "item_category_name", "actual_ship_at", "ship_to"]
@@ -52,7 +59,7 @@ for row in report:
     }
 
 
-with open('output\outbound_shipments.csv', 'w', newline='') as csvfile:
+with open(OUTPUT_FILE, 'w', newline='') as csvfile:
 
     fieldnames = ["ship_order_code", "ship_order_reference_number", "ship_order_customer_name", 
                   "carrier_code", "trailer_number", "shipment_code", "item_code", "item_category_name",
@@ -78,3 +85,7 @@ with open('output\outbound_shipments.csv', 'w', newline='') as csvfile:
             "actual_ship_at"                : details["actual_ship_at"],
             "ship_to"                       : details["ship_to"]
         })
+
+msg = Email(o365["username"], o365["password"])
+msg.addAttachment(OUTPUT_FILE)
+msg.sendMessage(SEND_TO, f"{datetime.now().strftime('%m/%d/%Y-%H:%M')} Shipments", '')
