@@ -35,7 +35,7 @@ class Email():
         self.connection.quit()
 
     def addAttachment(self, attachment_path: str):
-        attachment_path = os.path.abs(attachment_path)
+        attachment_path = os.path.abspath(attachment_path)
         self.mail_attachments.append((attachment_path, os.path.basename(attachment_path)))
 
 
