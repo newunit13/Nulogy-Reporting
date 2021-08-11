@@ -1,4 +1,4 @@
-from credentials import nulogy
+from utils.credentials import nulogy
 from typing import List
 from time import sleep
 import requests
