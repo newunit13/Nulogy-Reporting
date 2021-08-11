@@ -7,13 +7,11 @@ columns = ["code", "cost_per_unit", "item_type", "uuid"]
 filters = [{"column": "item_type", "operator": "starts with", "threshold": "A"},
            {"column": "inactive", "operator": "=", "threshold": "false"}]
 
-report = nu.get_report(report_code=report_code, columns=columns, filters=filters).decode("utf-8")
-report = [line.replace('"', '') for line in report.split('\n')[1:] if len(line) > 1]
+report = nu.get_report(report_code=report_code, columns=columns, filters=filters, headers=False)
 
 
 nulogy_items = dict()
 for row in report:
-    row = row.split(',')
     nulogy_items[row[0]] = {'nulogy_cost': row[1], "UUID": row[3]}
 
 
