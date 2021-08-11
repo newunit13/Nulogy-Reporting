@@ -1,4 +1,3 @@
-from outbound_shipments import SEND_TO
 import utils.nulogy as nu
 import csv
 from utils.email import Email
