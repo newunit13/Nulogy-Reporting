@@ -1,4 +1,4 @@
-from utils.credentials import nulogy
+from credentials import nulogy
 from typing import List
 from time import sleep
 import requests
@@ -64,8 +64,9 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
     status_url = response.json()['status_url']
     result_url = poll_report_url(status_url)
     report = downlad_report(result_url)
+    report = [line for line in report.split('\n') if line]      # remove blank lines
 
-    report = csv.reader(report.split('\n'), delimiter=',', quotechar='"')
+    report = csv.reader(report, delimiter=',', quotechar='"')
 
     if not headers:
         next(report)
@@ -81,5 +82,3 @@ if __name__ == '__main__':
 
     report = get_report(report_code=report_code, columns=columns, filters=filters)
 
-    with open('output.csv', 'wb') as f:
-        f.write(report)
