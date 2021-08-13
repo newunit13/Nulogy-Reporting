@@ -18,14 +18,16 @@ for row in report:
 query = """
 SELECT
 	ivt.NAMEALIAS				[ItemID]
-	,ivtp.PRICE/ivtp.PRICEUNIT	[Cost]
+	,ivtp.PRICE/CASE 
+		WHEN ivtp.PRICEUNIT = 0 
+		THEN 1 
+		ELSE ivtp.PRICEUNIT END	[Cost]
     ,ivt.ITEMID                 [DAX ItemID]
 FROM INVENTTABLE ivt
 LEFT JOIN INVENTTABLEMODULE ivtp ON ivtp.ITEMID = ivt.ITEMID and ivtp.DATAAREAID = ivt.DATAAREAID and ivtp.MODULETYPE = 0
 WHERE ivt.DATAAREAID = 'act'
   and ivt.ITEMGROUPID = 'AI'
   and ivt.NAMEALIAS <> ''
-  and ivtp.PRICEUNIT <> 0
 """
 
 r = sql.query(query=query)
