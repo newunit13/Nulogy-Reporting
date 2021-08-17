@@ -30,8 +30,8 @@ def poll_report_url(url: str) -> str:
         raise Exception(f"Error in polling: {response.status_code}")
 
     while response.json()['status'] != 'COMPLETED':
-        print('Report not yet ready, sleeping 60 seconds before next poll')
-        sleep(60)
+        print('Report not yet ready, sleeping 10 seconds before next poll')
+        sleep(10)
         response = requests.get(url=url, headers=headers)
 
     return response.json()['url']
@@ -52,6 +52,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
         "sort_by": sort_by
     })
 
+    print(f"Submitting request for {report_code} report")
     response = requests.post(url=url, headers=_headers, data=_data)
 
     if response.status_code != 201:
@@ -59,7 +60,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
         return 'Error'
 
     # small sleep to give the report a chance to generate before polling for a download link
-    sleep(30)
+    sleep(15)
 
     status_url = response.json()['status_url']
     result_url = poll_report_url(status_url)
