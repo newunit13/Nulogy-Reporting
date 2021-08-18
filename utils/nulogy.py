@@ -1,4 +1,4 @@
-from utils.credentials import nulogy
+from utils.config import NULOGY_SECRET_KEY
 from typing import List
 from time import sleep
 import requests
@@ -19,7 +19,7 @@ def downlad_report(download_url: str) -> str:
 def poll_report_url(url: str) -> str:
 
     headers = {
-        "Authorization": f"Basic {nulogy['secret_key']}",
+        "Authorization": f"Basic {NULOGY_SECRET_KEY}",
         "Content-Type": "application/json; charset=utf-8",
         "Accept": "application/json"
     }
@@ -40,7 +40,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
     url = "https://app.nulogy.net/api/reports/report_runs"
 
     _headers = {
-        "Authorization": f"Basic {nulogy['secret_key']}",
+        "Authorization": f"Basic {NULOGY_SECRET_KEY}",
         "Content-Type": "application/json; charset=utf-8",
         "Accept": "application/json"
     }
