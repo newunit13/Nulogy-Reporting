@@ -25,7 +25,7 @@ for row in report:
     if row[1] in nulogy_items:
         nulogy_items[row[1]]["location"] = row[0]
 
-with open(f'\\\\b4bfile01\\accudata\\Accu-tec Daily\\Raw data\\Warehouse pallet counts\\{datetime.now().strftime("%Y%m%d")}-pallet_counts.csv', 'w', newline='') as csvfile:
+with open(f'\\\\b4bfile01\\accudata\\Accu-tec Daily\\Autoreports\\Raw data\\Warehouse pallet counts\\{datetime.now().strftime("%Y%m%d")}-pallet_counts.csv', 'w', newline='') as csvfile:
 
     fieldnames = ["pallet_number", "item_number", "item_type", "customer_name", "location", "datestamp"]
 
