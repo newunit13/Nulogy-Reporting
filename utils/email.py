@@ -4,9 +4,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from utils.config import SMTP_USERNAME, SMTP_PASSWORD
 
 class Email():
-    def __init__(self, username: str, password: str, host: str='smtp.office365.com', port: int=587):
+    def __init__(self, username: str=SMTP_USERNAME, password: str=SMTP_PASSWORD, host: str='smtp.office365.com', port: int=587):
         self.username = username
         self.password = password
         self.connection = smtplib.SMTP(host, port)
@@ -40,8 +41,7 @@ class Email():
 
 
 if __name__ == '__main__':
-    from credentials import o365, debug_email
-    email = Email(o365['username'], o365['password'])
-    email.addAttachment(r'C:\Users\erussell\Repositories\Nulogy-Export\item_cost.csv')
-    email.addAttachment(r'C:\Users\erussell\Repositories\Nulogy-Export\inventory_snapshot.csv')
-    email.sendMessage(debug_email, 'This is just a test', 'Hello world!')
+    email = Email()
+    email.addAttachment(r'C:\Users\erussell\Repositories\Nulogy-Export\output\item_cost_update.csv')
+    email.addAttachment(r'C:\Users\erussell\Repositories\Nulogy-Export\output\inventory_snapshot.csv')
+    email.sendMessage('erussell@ciservicesnow.com', 'This is just a test', 'Hello world!')
