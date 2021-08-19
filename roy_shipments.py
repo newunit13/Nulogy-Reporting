@@ -1,7 +1,6 @@
 import utils.nulogy as nu
 import csv
 from utils.email import Email
-from utils.credentials import o365
 from datetime import datetime
 
 OUTPUT_FILE = f"output/{datetime.now().strftime('%Y%m%d-%H%M')}-Shipments.csv"
@@ -23,6 +22,6 @@ with open(OUTPUT_FILE, 'w', newline='') as csvfile:
             csv_writer.writerow(line)
             temp.add(line_str)
 
-msg = Email(o365["username"], o365["password"])
+msg = Email()
 msg.addAttachment(OUTPUT_FILE)
 msg.sendMessage(SEND_TO, f"{datetime.now().strftime('%m/%d/%Y-%H:%M')} Shipments", '')
