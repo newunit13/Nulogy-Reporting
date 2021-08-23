@@ -4,8 +4,8 @@ import json
 from datetime import datetime
 
 report_code = "job_productivity"
-columns = ["line_name", "line_leader_name", "units_produced", "units_remaining", "unit_of_measure", "performance", "availability", "line_efficiency"]
-filters = [{"column": "actual_job_start_at", "operator": "today"}]
+columns = ["line_name", "line_leader_name", "units_produced", "units_remaining", "unit_of_measure", "performance", "availability", "line_efficiency", "percent_complete"]
+filters = [{"column": "actual_job_start_at", "operator": "today"}, {"column": "job_status", "operator": "=", "threshold": "started"}]
 sort_by = [{"column": "line_name", "direction": 'asc'}]
 
 report = nu.get_report(report_code=report_code, columns=columns, filters=filters, sort_by=sort_by, headers=False)
@@ -23,14 +23,14 @@ for line in report:
         "units_produced"    : float(line[3]),
         "units_remaining"   : float(line[4]) if float(line[4]) >= 0 else 0,
         "unit_of_measure"   : line[5],
-        "line_performance"  : float(line[6].replace('%',''))/100,
-        "line_availability" : float(line[7].replace('%',''))/100,
-        "line_effeciency"   : float(line[8].replace('%',''))/100,
-        "timestamp"         : datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        "line_performance"  : float(line[6].replace('%','')),
+        "line_availability" : float(line[7].replace('%','')),
+        "line_effeciency"   : float(line[8].replace('%','')),
+        "timestamp"         : datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
+        "percent_complete"  : f"{float(line[9].replace('%','')):0.0f}%"
     })
 
 data = json.dumps(data)
 r = requests.post(url=dashboard_url, headers=dashboard_headers, data=data)
 
 print(r.status_code)
-
