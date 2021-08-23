@@ -1,5 +1,6 @@
 import utils.nulogy as nu
 import csv
+from datetime import datetime
 
 short_to_long_uom = {
     'ea'    : 'eaches',
@@ -91,17 +92,17 @@ def convertToBaseUnits(item_code: str, unit_of_measure: str, number_of_units: fl
 
 report_code = "job_productivity"
 columns = ["line_leader_name", "actual_job_end_at", "item_code", "line_name", "expected_units_per_person_hour", 
-           "actual_person_hours_payable", "units_produced", "unit_of_measure"]
-filters = [{"column": "actual_job_end_at", "operator": "yesterday"}]
+           "actual_person_hours_payable", "units_produced", "unit_of_measure", "machine_hours"]
+filters = [{"column": "actual_job_start_at", "operator": "today"}]
 sort_by = [{"column": "line_name", "direction": 'asc'}]
 
 report = nu.get_report(report_code=report_code, columns=columns, filters=filters, sort_by=sort_by, headers=False)
 
-with open('output/job_productivity.csv', 'w', newline='') as csvfile:
+with open(f'\\\\b4bfile01\\Accudata\\Accu-tec Daily\\Autoreports\\Raw data\\Job Productivity\\{datetime.now().strftime("%m%d%Y-%H%M")}-job_productivity.csv', 'w', newline='') as csvfile:
 
     fieldnames = ["Job", "Line Leader", "Actual Job End Date", "Item code", "Line Name", "Expected PPMH", "Actual Hours", "Units Produced", "Unit of Measure",
                   "Base Units Produced", "Base Unit of Measure", "Base UoM Expected PPMH", "Expected Hours", "Expected Units", "Actual PPMH", "Base Actual PPMH",
-                  "Line Effeciency", "Overspend $"]
+                  "Line Effeciency", "Overspend $", "Train Hours"]
 
     csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     csv_writer.writeheader()
@@ -116,6 +117,7 @@ with open('output/job_productivity.csv', 'w', newline='') as csvfile:
         actual_payble_hours     = float(line[6])
         units_produced          = float(line[7])
         unit_of_measure         = line[8]
+        machine_hours           = line[9]
         base_units_produced     = convertToBaseUnits(item_code, unit_of_measure, units_produced)
         base_unit_of_measure    = uoms[item_code]['base_unit']
         base_expected_ppmh      = convertToBaseUnits(item_code, unit_of_measure, expected_ppmh)
@@ -144,6 +146,7 @@ with open('output/job_productivity.csv', 'w', newline='') as csvfile:
             "Actual PPMH"               : acutal_ppmh, 
             "Base Actual PPMH"          : base_actual_ppmh,
             "Line Effeciency"           : line_effeciency, 
-            "Overspend $"               : overspend_dollars
+            "Overspend $"               : overspend_dollars,
+            "Train Hours"               : machine_hours
         })
 
