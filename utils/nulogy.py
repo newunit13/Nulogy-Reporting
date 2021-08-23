@@ -1,6 +1,7 @@
 from utils.config import NULOGY_SECRET_KEY
 from typing import List
 from time import sleep
+from datetime import datetime
 import requests
 import json
 import csv
@@ -52,12 +53,21 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
         "sort_by": sort_by
     })
 
-    print(f"Submitting request for {report_code} report")
-    response = requests.post(url=url, headers=_headers, data=_data)
+    error_count = 0
+    while True:
+        print(f"Submitting request for {report_code} report")
+        response = requests.post(url=url, headers=_headers, data=_data)
 
-    if response.status_code != 201:
-        print(f"Error: {response.status_code}")
-        return 'Error'
+        if response.status_code == 201:
+            break
+        
+        if response.status_code != 201:
+            with open(F'ERROR-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt') as outfile:
+                outfile.write(f'{response.status_code}-{response.text}')
+            if error_count > 3:
+                raise Exception
+            error_count += 1
+            sleep(10)
 
     # small sleep to give the report a chance to generate before polling for a download link
     sleep(15)
