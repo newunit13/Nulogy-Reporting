@@ -72,13 +72,18 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
     # small sleep to give the report a chance to generate before polling for a download link
     sleep(15)
 
-    status_url = response.json()['status_url']
-    result_url = poll_report_url(status_url)
-    report = downlad_report(result_url)
-    report = [line for line in report.split('\n') if line]      # remove blank lines
+    try:
+        status_url = response.json()['status_url']
+        result_url = poll_report_url(status_url)
+        report = downlad_report(result_url)
+        report = [line for line in report.split('\n') if line]      # remove blank lines
 
-    report = csv.reader(report, delimiter=',', quotechar='"')
+        report = csv.reader(report, delimiter=',', quotechar='"')
 
+    except Exception as e:
+        with open(F'EXCEPTION-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt') as outfile:
+            outfile.write(f'{e}')
+    
     if not headers:
         next(report)
 
