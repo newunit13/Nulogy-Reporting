@@ -62,7 +62,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
             break
         
         if response.status_code != 201:
-            with open(F'ERROR-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt') as outfile:
+            with open(F'ERROR-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt', 'w') as outfile:
                 outfile.write(f'{response.status_code}-{response.text}')
             if error_count > 3:
                 raise Exception
@@ -81,7 +81,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
         report = csv.reader(report, delimiter=',', quotechar='"')
 
     except Exception as e:
-        with open(F'EXCEPTION-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt') as outfile:
+        with open(F'EXCEPTION-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt', 'w') as outfile:
             outfile.write(f'{e}')
     
     if not headers:
