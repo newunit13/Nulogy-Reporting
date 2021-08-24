@@ -27,7 +27,8 @@ for line in report:
         "line_availability" : float(line[7].replace('%','')),
         "line_effeciency"   : float(line[8].replace('%','')),
         "timestamp"         : datetime.now().strftime("%m/%d/%Y %H:%M:%S"),
-        "percent_complete"  : f"{float(line[9].replace('%','')):0.0f}%"
+        "percent_complete"  : f"{float(line[9].replace('%','')):0.0f}%",
+        "job_id"            : line[0]
     })
 
 data = json.dumps(data)
