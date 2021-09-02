@@ -9,6 +9,19 @@ import csv
 
 uoms = None
 
+def filename_with_timestamp(report_type: str) -> str:
+    """
+        Returns a string timestamped string with the report type and .csv extension
+
+            Parameter:
+                report_type (str)   : The type of report
+
+            Returns:
+                str : '<timestamp>-<report_type>.csv'
+    """
+    return f"{datetime.now().strftime('%Y%m%d-%H%M')}-{report_type}.csv"
+
+
 def downlad_report(download_url: str) -> str:
 
     response = requests.get(download_url)
@@ -133,7 +146,7 @@ def get_uom_list() -> Dict:
     return uoms
 
 def convertToBaseUnits(item_code: str, unit_of_measure: str, number_of_units: float) -> float:
-    '''
+    """
         Returns the number of base units for a specified item.
 
             Parameter:
@@ -143,7 +156,7 @@ def convertToBaseUnits(item_code: str, unit_of_measure: str, number_of_units: fl
 
             Returns:
                 number_of_units (float) : The number of base units 
-    '''
+    """
 
     short_to_long_uom = {
         'ea'    : 'eaches',
