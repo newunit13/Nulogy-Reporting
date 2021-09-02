@@ -3,6 +3,9 @@ import utils.sql as sql
 import csv
 import re
 
+OUTPUT_FILE = nu.filename_with_timestamp("dax_vs_nu_inventory")
+OUTPUT_PATH = f'\\\\b4bfile01\\Accudata\\Accu-tec Daily\\Autoreports\\Raw data\\Nulogy vs DAX inbound\\{OUTPUT_FILE}'
+
 query = """
 select
 	pt.PURCHID					[DAX PO]
@@ -22,8 +25,8 @@ from PURCHTABLE pt
 LEFT JOIN PURCHLINE pl ON pl.PURCHID = pt.PURCHID and pl.DATAAREAID = pt.DATAAREAID
 LEFT JOIN INVENTTABLE ivt ON ivt.ITEMID = pl.ITEMID and ivt.DATAAREAID = pl.DATAAREAID
 where pt.DATAAREAID = 'act'
-  and ivt.ITEMGROUPID = 'AI'
-  AND pt.PURCHSTATUS IN ('1', '2')
+  and ivt.ITEMGROUPID IN ('AI', 'SV', 'EX', 'EX1', 'EX2', 'EX3', 'EX4')
+  --AND pt.PURCHSTATUS IN ('1', '2')
   AND pt.CREATEDDATETIME >= '2021-05-28'
   AND pt.VENDORREF <> 'Pallet IDs'
 order by pt.PURCHID
@@ -84,6 +87,9 @@ for row in report:
     ro_customer = row[3]
     if re.match(r'(PO_\d{8})', row[4]):
         ro_ref = re.findall(r'(PO_\d{8})', row[4])[0]
+    elif re.match(r'DAX PO (\d*)', row[4]):
+        ref_num = re.findall(r'DAX PO (\d*)', row[4])[0]
+        ro_ref = f"PO_{int(ref_num):08d}"
     else:
         ro_ref = ''
     ro_item     = row[5]
@@ -128,7 +134,6 @@ for row in report:
                 "dax_qty_expect"    : '',
                 "dax_qty_actual"    : '',
             })
-
     else:
         nulogy_receive_orders[ro_code].update({
             "po_in_dax"     : 'False',
@@ -142,8 +147,7 @@ for row in report:
         })
 
 
-
-with open('output/nulogy_vs_dax_inbound.csv', 'w', newline='') as csvfile:
+with open(OUTPUT_PATH, 'w', newline='') as csvfile:
 
     fieldnames = ['Nulogy Receive Order', 'RO Date', 'Received in Nulogy', 'PO in DAX', 'DAX PO Number', 'Item Code', 
                   'Item in DAX', 'DAX Item Code', 'Nulogy Expected', 'Nulogy Received', 'DAX Expected', 'DAX Received']
