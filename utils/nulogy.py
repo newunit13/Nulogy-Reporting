@@ -3,11 +3,13 @@ from typing import List, Dict
 from time import sleep
 from datetime import datetime
 from random import randint
+import logging
 import requests
 import json
 import csv
 
 uoms = None
+logging.basicConfig(filename='errors.log', format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
 
 def filename_with_timestamp(report_type: str) -> str:
     """
@@ -27,7 +29,8 @@ def downlad_report(download_url: str) -> str:
     response = requests.get(download_url)
 
     if response.status_code != 200:
-        raise Exception(f"Invalid Status code downloading report: {response.status_code}")
+        logging.error(f"Invalid Status code downloading report: {response.status_code}")
+        raise Exception(f"Download Exception")
     
     return response.content.decode('utf-8')
 
@@ -43,10 +46,11 @@ def poll_report_url(url: str) -> str:
     response = requests.get(url=url, headers=headers)
 
     if response.status_code != 200:
-        raise Exception(f"Error in polling: {response.status_code}")
+        logging.error(f"Invalid status code polling report: {response.status_code}")
+        raise Exception(f"Polling Exception")
 
     while response.json()['status'] != 'COMPLETED':
-        print('Report not yet ready, sleeping 10 seconds before next poll')
+        logging.info('Report not yet ready, sleeping 10 seconds before next poll')
         sleep(10)
         response = requests.get(url=url, headers=headers)
 
@@ -70,20 +74,19 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
 
     error_count = 0
     while True:
-        print(f"Submitting request for {report_code} report")
+        logging.info(f"Submitting request for {report_code} report")
         response = requests.post(url=url, headers=_headers, data=_data)
 
         if response.status_code == 201:
             break
         
         if response.status_code != 201:
-            with open(F'ERROR-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt', 'w') as outfile:
-                outfile.write(f'{response.status_code}-{response.text}')
-                outfile.write(f'Error count: {error_count}')
-                if error_count > 3:
-                    outfile.write(f'Too many failed attempts. Exiting')
-                    raise Exception
-                error_count += 1
+            error_count += 1
+            logging.warning(F'{report_code}-{response.status_code}-{response.text} : Error Count {error_count}')
+
+            if error_count > 3:
+                logging.critical(f'{report_code}-Too many failed attempts')
+                raise Exception
             sleep(randint(60,120))
 
     # small sleep to give the report a chance to generate before polling for a download link
@@ -98,8 +101,7 @@ def get_report(report_code: str, columns: List[str], filters: List[dict]=[], sor
         report = csv.reader(report, delimiter=',', quotechar='"')
 
     except Exception as e:
-        with open(F'EXCEPTION-{report_code}-{datetime.now().strftime("%Y%m%d-%H%M")}.txt', 'w') as outfile:
-            outfile.write(f'{e}')
+        logging.error(f"{report_code}-{e}")
     
     if not headers:
         next(report)
@@ -195,7 +197,8 @@ def convertToBaseUnits(item_code: str, unit_of_measure: str, number_of_units: fl
             unit_of_measure = conversion["to_unit"]
             break
     else:
-        raise Exception(f"Unable to find {unit_of_measure} in {item_code} conversions.")
+        logging.error(f"Unable to find {unit_of_measure} in {item_code} conversions.")
+        raise Exception(f"Conversion Exception")
 
     return convertToBaseUnits(item_code, unit_of_measure, number_of_units)
 
